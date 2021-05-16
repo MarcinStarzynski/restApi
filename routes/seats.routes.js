@@ -18,10 +18,14 @@ router.route('/seats').post((req, res) => {
         client: req.body.client,
         email: req.body.email,
     }
-    db.seats.push(seat);
-    return res.json({
+    if(db.seats.some(selectedSeat => (selectedSeat.day == req.body.day && selectedSeat.seat == req.body.seat))) {
+        return res.status(409).send('This seat is taken');
+    } else {
+        db.seats.push(seat);
+        return res.json({
         message: 'ok'
-    });
+        });
+    }
 });
 
 router.route('/seats/:id').put((req, res) => {
