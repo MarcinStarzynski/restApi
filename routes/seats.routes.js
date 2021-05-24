@@ -1,4 +1,5 @@
 const express = require('express');
+const { seats } = require('../db');
 const router = express.Router();
 let db = require('../db');
 
@@ -22,9 +23,9 @@ router.route('/seats').post((req, res) => {
         return res.status(409).send('This seat is taken');
     } else {
         db.seats.push(seat);
-        return res.json({
-        message: 'ok'
-        });
+        req.io.emit('seatsUpdated', db.seats);
+        console.log('Siedzonko zajęte');
+        return res.json(db.seats);
     }
 });
 
