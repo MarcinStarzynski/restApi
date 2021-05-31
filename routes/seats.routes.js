@@ -1,58 +1,15 @@
 const express = require('express');
-const { seats } = require('../db');
 const router = express.Router();
-let db = require('../db');
+const SeatController = require('../controllers/seats.controller');
 
-router.route('/seats').get((req, res) => {
-    res.json(db.seats);
-});
+router.get('/seats', SeatController.getAll);
 
-router.route('/seats/:id').get((req, res) => {
-    res.json(db.seats[req.params.id]);
-});
+router.get('/seats/:id', SeatController.getOne);
 
-router.route('/seats').post((req, res) => {
-    const seat = {
-        id: (db.seats.length + 1),
-        day: req.body.day,
-        seat: req.body.seat,
-        client: req.body.client,
-        email: req.body.email,
-    }
-    if(db.seats.some(selectedSeat => (selectedSeat.day == req.body.day && selectedSeat.seat == req.body.seat))) {
-        return res.status(409).send('This seat is taken');
-    } else {
-        db.seats.push(seat);
-        req.io.emit('seatsUpdated', db.seats);
-        console.log('Siedzonko zajęte');
-        return res.json(db.seats);
-    }
-});
+router.post('/seats', SeatController.post);
 
-router.route('/seats/:id').put((req, res) => {
-    db.seats.forEach(seat => {
-        if(seat.id == req.params.id) {
-            seat.day = req.body.day;
-            seat.seat = req.body.seat;
-            seat.client = req.body.client;
-            seat.email = req.body.email;
-        }
-    });
-    return res.json({
-        message: 'ok'
-    });
-});
+router.put('/seats/:id', SeatController.put);
 
-router.route('/seats/:id').delete((req, res) => {
-    db.seats.forEach(seat => {
-        if(seat.id == req.params.id) {
-            const index = db.seats.indexOf(seat);
-            db.seats.splice(index, 1);
-        }
-    });
-    return res.json({
-        message: 'ok'
-    });
-});
+router.delete('/seats/:id', SeatController.delete);
 
 module.exports = router;
