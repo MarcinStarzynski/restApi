@@ -35,7 +35,8 @@ app.use((req, res) => {
     });
 });
 
-mongoose.connect('mongodb+srv://gienekmsms:Mar<1996@cluster0.4u1uf.mongodb.net/NewWaveDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+const dbURI = process.env.NODE_ENV === 'production' ? 'mongodb+srv://gienekmsms:Mar<1996@cluster0.4u1uf.mongodb.net/NewWaveDB?retryWrites=true&w=majority' : 'mongodb://localhost:27017/NewWaveDB';
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
@@ -55,3 +56,5 @@ io.on('connection', (socket) => {
         console.log('Disconnected ' + socket.id);
     })
 });
+
+module.exports = server;
